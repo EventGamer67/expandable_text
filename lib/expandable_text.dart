@@ -10,38 +10,38 @@ import './text_parser.dart';
 typedef StringCallback = void Function(String value);
 
 class ExpandableText extends StatefulWidget {
-  const ExpandableText(
-    this.text, {
-    Key? key,
-    required this.expandText,
-    this.collapseText,
-    this.expanded = false,
-    this.onExpandedChanged,
-    this.onLinkTap,
-    this.linkColor,
-    this.linkEllipsis = true,
-    this.linkStyle,
-    this.prefixText,
-    this.prefixStyle,
-    this.onPrefixTap,
-    this.urlStyle,
-    this.onUrlTap,
-    this.hashtagStyle,
-    this.onHashtagTap,
-    this.mentionStyle,
-    this.onMentionTap,
-    this.expandOnTextTap = false,
-    this.collapseOnTextTap = false,
-    this.style,
-    this.textDirection,
-    this.textAlign,
-    this.textScaleFactor,
-    this.maxLines = 2,
-    this.animation = false,
-    this.animationDuration,
-    this.animationCurve,
-    this.semanticsLabel,
-  })  : assert(maxLines > 0),
+  const ExpandableText(this.text,
+      {Key? key,
+      required this.expandText,
+      this.collapseText,
+      this.expanded = false,
+      this.onExpandedChanged,
+      this.onLinkTap,
+      this.linkColor,
+      this.linkEllipsis = true,
+      this.linkStyle,
+      this.prefixText,
+      this.prefixStyle,
+      this.onPrefixTap,
+      this.urlStyle,
+      this.onUrlTap,
+      this.hashtagStyle,
+      this.onHashtagTap,
+      this.mentionStyle,
+      this.onMentionTap,
+      this.expandOnTextTap = false,
+      this.collapseOnTextTap = false,
+      this.style,
+      this.textDirection,
+      this.textAlign,
+      this.textScaleFactor,
+      this.maxLines = 2,
+      this.animation = false,
+      this.animationDuration,
+      this.animationCurve,
+      this.semanticsLabel,
+      this.selectable = false})
+      : assert(maxLines > 0),
         super(key: key);
 
   final String text;
@@ -73,6 +73,7 @@ class ExpandableText extends StatefulWidget {
   final Duration? animationDuration;
   final Curve? animationCurve;
   final String? semanticsLabel;
+  final bool selectable;
 
   @override
   ExpandableTextState createState() => ExpandableTextState();
@@ -271,13 +272,26 @@ class ExpandableTextState extends State<ExpandableText>
           textSpan = content;
         }
 
-        final richText = SelectableText.rich(
-          textSpan,
-          textDirection: textDirection,
-          textAlign: textAlign,
-          style: TextStyle(overflow: TextOverflow.clip),
-          textScaler: TextScaler.linear(textScaleFactor),
-        );
+        final richText;
+        if (widget.selectable) {
+          //RichText не поддерживает SelectionArea, поэтому используется Text.rich
+          richText = SelectableText.rich(
+            textSpan,
+            textDirection: textDirection,
+            textAlign: textAlign,
+            style: TextStyle(overflow: TextOverflow.clip),
+            textScaleFactor: textScaleFactor,
+          );
+        } else {
+          richText = RichText(
+            text: textSpan,
+            textDirection: textDirection,
+            textAlign: textAlign,
+            overflow: TextOverflow.clip,
+            softWrap: true,
+            textScaler: TextScaler.linear(textScaleFactor),
+          );
+        }
 
         if (widget.animation) {
           return AnimatedSize(
@@ -302,7 +316,7 @@ class ExpandableTextState extends State<ExpandableText>
       );
     }
 
-    return SelectionArea(child: result);
+    return result;
   }
 
   void _updateText() {

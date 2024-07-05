@@ -1,10 +1,10 @@
 name: expandable_text
 description: Widget that only shows the first lines of a text and adds a link to expand the full text.
-version: 2.3.0
+version: 2.3.1
 repository: https://github.com/fweinaug/expandable_text
 
 environment:
-  sdk: '>=3.3.3 <4.0.0'
+  sdk: ">=3.3.0"
 
 dependencies:
   flutter:
